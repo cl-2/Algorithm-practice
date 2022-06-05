@@ -1,0 +1,70 @@
+1.
+思路:用哈希表建立数值与下标之间的映射，如果在之后遍历到了对于target而言的补数，就将两个数的下标存储并返回
+如：2 4 7 11  target：9   下标为0时 m[2] = 0 然后下标为2时 m[(target:9 - 7) : 2] 发现在哈希表中已经存在m[2]
+所以证明当前枚举的值 7 和 之前的 2 对于target是个补数 记录他们的下标在res中  并返回。
+
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        vector<int>res;
+        unordered_map<int, int> m;
+
+        for(int i = 0; i < nums.size(); i ++)
+        {
+            if(m.count(target - nums[i]))
+            {
+                res = vector<int>({m[target - nums[i]], i});
+                break;
+            }
+            m[nums[i]] = i;
+        }
+        return res;
+    }
+};
+
+思路：有点像高精度算法的模拟进位的过程，只不过是通过链表来实现，没啥好记的，需要提一下就是使用链表我们可以提前开一个空间-1作头节点，简化边界条件
+2.
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        ListNode* h = new ListNode(-1);
+        ListNode* t = h;
+        int x = 0;
+
+        while(l1 || l2 || x){
+           if(l1) x += l1 -> val, l1 = l1 -> next;
+           if(l2) x += l2 -> val, l2 = l2 -> next;
+           t -> next = new ListNode(x % 10);
+           t = t -> next;
+           x /= 10;
+        }
+        return h -> next;
+    }
+};
+
+思路：双指针算法 就像滑动窗口问题一样 i枚举右侧边界， j枚举左侧边界 哈希表判断当前字符是否已经存在 存在就将j向右移一位 每次记录当前获得的最大长度
+3.
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        unordered_map<char, int> m;
+        int ans = 0;
+        for(int i = 0, j = 0; i < s.size(); i ++)
+        {   
+            m[s[i]] ++;
+            while(m[s[i]] > 1) m[s[j++]] --;
+            ans = max(i - j + 1, ans);
+        }
+        return ans;
+    }
+};
